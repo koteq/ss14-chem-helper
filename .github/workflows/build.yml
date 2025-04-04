@@ -1,0 +1,74 @@
+name: Extract Forks Data, Build, and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Restore extracted data from cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: src/assets/*-data.json
+          key: v2 # Update this key to invalidate the cache
+
+      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+        name: Clone forks
+        run: ./clone-forks.sh
+        working-directory: scripts/clone-forks
+
+      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+        name: Install dependencies for extraction script
+        run: npm ci
+        working-directory: scripts/extract-forks-data
+
+      - if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+        name: Extract forks data
+        run: node scripts/extract-forks-data/extract-forks-data.mjs
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

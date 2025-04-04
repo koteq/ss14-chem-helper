@@ -1,0 +1,11 @@
+{
+  "name": "extract-forks-data",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@fluent/bundle": "^0.19.0",
+    "js-yaml": "^4.1.0"
+  },
+  "packageManager": "npm@10.2.1+sha1.41fd6626a08d4167b8639edd272ecf9735e7ceaf"
+}
