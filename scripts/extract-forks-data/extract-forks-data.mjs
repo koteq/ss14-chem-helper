@@ -7,17 +7,20 @@ import { fileURLToPath } from "url";
 (function main() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
+
   const forksDir = join(__dirname, "../clone-forks/");
   for (const entry of fs.readdirSync(forksDir, { withFileTypes: true })) {
-    if (entry.isDirectory()) {
-      const fork = entry.name;
-      const data = loadForkData(join(forksDir, fork));
-      fs.writeFileSync(
-        join(__dirname, "../../src/assets", `${fork}-data.json`),
-        JSON.stringify(data, null, 2),
-      );
-    }
+    if (!entry.isDirectory()) continue;
+
+    const fork = entry.name;
+    console.log(`Processing fork: ${fork}`);
+    const data = loadForkData(join(forksDir, fork));
+
+    const outputFile = join(__dirname, "../../src/assets", `${fork}-data.json`);
+    console.log(`Writing data to ${outputFile}`);
+    fs.writeFileSync(outputFile, JSON.stringify(data, null, 2));
   }
+  console.log("Done!");
 })();
 
 function loadForkData(forkDir) {

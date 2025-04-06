@@ -6,13 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . && ",
+    "lint": "eslint .",
     "format": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clone-forks": "scripts/clone-forks/clone-forks.sh",
+    "extract-forks-data": "npm install --prefix scripts/extract-forks-data && node scripts/extract-forks-data/extract-forks-data.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "wcag-contrast": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

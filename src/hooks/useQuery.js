@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
 
-export function useJson(url) {
+export function useQuery(queryFn) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let canceled = false;
-    (async function fetchJson() {
+    (async function () {
       setError(null);
       setLoading(true);
       try {
-        const result = await fetch(url);
-        if (!result.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const json = await result.json();
+        const result = await queryFn();
         if (!canceled) {
-          setData(json);
+          setData(result);
         }
       } catch (error) {
         if (!canceled) {
@@ -34,7 +30,7 @@ export function useJson(url) {
       canceled = true;
       setLoading(false);
     };
-  }, [url]);
+  }, [queryFn]);
 
   return { data, error, loading };
 }
